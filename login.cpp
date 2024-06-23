@@ -24,7 +24,7 @@ int main() {
                 cout << "Invalid username or password" << endl;
             }
         } else if (option == "2") {
-            cout << "Exiting..." << endl;
+            cout << "Exiting" << endl;
             break;
         } else {
             cout << "Invalid option, please try again" << endl;

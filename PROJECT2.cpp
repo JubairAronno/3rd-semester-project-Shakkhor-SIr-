@@ -390,12 +390,13 @@ void menu() {
 
     } while (1);
 }
-
 int main() {
     string filename = "userdata.txt";
-    unordered_map<string, string> um = readUserDatafromfilelogin(filename);
+    unordered_map<string, string> a = readUserDatafromfilelogin(filename);
 
     int attempt_count = 0;
+    int invalid_option_count = 0;
+    int existing_username_count = 0;
 
     while (true) {
         cout << "1. Login\n2. Register\n3. Exit\nEnter option: ";
@@ -403,6 +404,8 @@ int main() {
         cin >> option;
 
         if (option == "1") {
+            invalid_option_count = 0; 
+            existing_username_count = 0; 
             if (attempt_count >= 5) {
                 cout << "You have tried 5 times and you cannot try anymore.\n";
                 break;
@@ -412,7 +415,7 @@ int main() {
             string username;
             cin >> username;
 
-            if (um.find(username) == um.end()) {
+            if (a.find(username) == a.end()) {
                 cout << "Invalid username\n";
                 attempt_count++;
                 if (attempt_count >= 3 && attempt_count < 5) {
@@ -425,7 +428,7 @@ int main() {
             string password;
             cin >> password;
 
-            if (um[username] == password) {
+            if (a[username] == password) {
                 cout << "Login successful\n";
                 menu();
                 break;
@@ -437,25 +440,44 @@ int main() {
                 }
             }
         } else if (option == "2") {
+            invalid_option_count = 0; 
             cout << "Enter new username: ";
             string username;
             cin >> username;
-            cout << "Enter new password: ";
-            string password;
-            cin >> password;
 
-            if (um.find(username) == um.end()) {
-                um[username] = password;
-                writeUserDatatofilelogin(filename, um);
+            if (a.find(username) == a.end()) {
+                existing_username_count = 0;
+                cout << "Enter new password: ";
+                string password;
+                cin >> password;
+
+                a[username] = password;
+                writeUserDatatofilelogin(filename, a);
                 cout << "Registration successful\n";
             } else {
                 cout << "Username already exists\n";
+                existing_username_count++;
+                if (existing_username_count >= 3 && existing_username_count < 5) {
+                    cout << "Attempt " << existing_username_count << " failed. " << 5 - existing_username_count << " attempt(s) left.\n";
+                } else if (existing_username_count >= 5) {
+                    cout << "You have entered existing username 5 times. You cannot register anymore.\n";
+                    break;
+                }
             }
         } else if (option == "3") {
+            invalid_option_count = 0; 
+            existing_username_count = 0; 
             cout << "Exiting\n";
             break;
         } else {
+            invalid_option_count++;
             cout << "Invalid option, please try again\n";
+            if (invalid_option_count >= 3 && invalid_option_count < 5) {
+                cout << "Attempt " << invalid_option_count << " failed. " << 5 - invalid_option_count << " attempt(s) left.\n";
+            } else if (invalid_option_count >= 5) {
+                cout << "You have entered invalid options 5 times. You cannot choose anymore.\n";
+                break;
+            }
         }
     }
     return 0;
